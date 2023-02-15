@@ -1,0 +1,57 @@
+{% extends "main.html" %}
+
+
+
+{% block title %} Редактировать новость {% endblock title %}
+
+{% block content %}
+
+<h2>Вход выполнен: {{request.user.username}}</h2>
+<button> <a href="sign/logout/">Выйти</a> </button>
+    <p align="right"><button> <a href="/"> Вернуться на главную страницу </a></button> </p>
+
+   <h1>Редактируемая новость</h1>
+<table>
+            <tr>
+                <td>
+                    Название
+                </td>
+                <td>
+                    Дата публикации
+                </td>
+                <td>
+                    Описание
+                </td>
+                <td>
+                    Автор
+                </td>
+                <td>
+                    Категория
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ note.title}}
+                </td>
+                <td>
+                    {{ note.dateCreation|date:'d-M-Y h:m' }}
+                </td>
+
+                <td>
+                    {{ note.text }}
+                </td>
+                <td>
+                    {{ note.author }}
+                </td>
+                <td>
+                    {{ note.category }}
+                </td>
+            </tr>
+        </table>
+
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form }} <!-- Теперь нам нужна только готовая форма и кнопка -->
+    <input type="submit" value="подтвердить"></form>
+{% endblock content %}

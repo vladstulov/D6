@@ -1,0 +1,172 @@
+
+{% extends "main.html" %}
+
+{% load custom_filters %}  <!-- наши фильтры -->
+
+{% block title %}
+News
+{% endblock title %}
+
+
+{% block content %}
+
+<body style="background-color: #CCFF66">
+<h2>Вход выполнен: {{request.user.username}}</h2>
+<button> <a href="sign/logout/">Выйти</a> </button>
+
+    <p align="right"><button> <a href="/"> Вернуться на главную страницу </a></button> </p>
+<p align="right">Добавление заметки на портал и поиск <BR> по статьям доступны на главной странице </p>
+
+
+
+
+<h1><p align="center" >Новости на портале в категории "<i>{{category}}</i>"</p></h1>
+
+
+{% if is_not_subscriber %}
+
+<p align="center"><button> <a href="{% url 'subscribe' category.id %}"> Подписаться на категориию </a></button> </p>
+
+{% else %}
+
+<p align="right" >Приветствую Вас <i>{{request.user.username}}</i>!  Вы подписаны на категорию  "<i>{{category}}</i>"</p>
+
+<p align="right">И это здорово, но если очень хочется, то можно и <a href="{% url 'unsubscribe' category.id %}"> отписаться </a> </p>
+
+{% endif %}
+
+
+    <hr>
+    {% if category_news_list %} <!-- Если есть заметки, то выводим таблицу с ними -->
+      Количество заметок в категории:
+        {{ category_news_list|length }}
+
+
+
+    {% else %}
+        <h2>Заметок на портале нет!</h2>
+    {% endif %}
+
+
+
+
+<!-- Перед таблицей добавим форму для поиска -->
+
+
+        <table>
+            <tr>
+                <td>
+                    <strong><p align="right" >Название</p></strong>
+                 <br><br>
+                </td>
+
+                <td>
+<!-- добавляем пустой столбец, чтобы аккуратно отображалось на странице -->
+                    <br><br>
+                </td>
+
+
+
+                <td>
+                    <strong><p align="center" >Дата публикации</p></strong>
+                    <br><br>
+                </td>
+                <td>
+                    <strong><p align="center" >Описание</p></strong>
+                    <br><br>
+                </td>
+                <td width=100px>
+                    <strong><p align="left" >Автор</p></strong>
+                    <br><br>
+                </td>
+                <td>
+                    <strong><p align="center" >Категория<p></strong>
+                    <br><br>
+                </td>
+            </tr>
+            <br>
+
+        {% for note in category_news_list %}
+
+            <tr>
+                
+                <td>
+                    <a href="{% url 'note' note.id %}">{{ note.title|censor }}</a> &emsp; &emsp; &emsp; &emsp;
+                    <td>
+
+                    </td>
+                    <br>
+
+                </td>
+                    
+                <td>
+                    {{ note.dateCreation|date:'d M Y' }}
+                    <br>
+                </td>
+
+                <td width=40%>
+                    {{ note.text|truncatechars:77|censor }} <!-- дописываем специальный фильтр, чтобы ограничить количество
+                    символов до 77. Все остальные символы превратятся в многоточие. -->
+                    <br>
+                </td>
+                <td width=100px>
+                    {{ note.author }}
+                    <br>
+                </td>
+
+                <td>
+                    <i><b>
+                   <a href="{% url 'category_list' category.id %}">{{ category.name }}</a>
+
+                    </b></i>
+                    <br>
+                    <br>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+{% if is_paginated %}
+
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">>>></a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+
+{% endif %}
+
+<!-- Добавляем кнопку Стать автором. При нажатии выполняется метод upgrade_me лежащий sign/view -->
+{% if is_not_authors %}
+<p align="right"><button>  <a href="sign/upgrade/"> Стать автором!</a> </button></p>
+
+{% endif %}
+
+{% endblock content %}
+</body>
+
+<!--{% if not is_not_subscriber %}-->
+
+<!--<p align="right" >Приветствую Вас {{request.user.username}}!  Вы подписаны на категорию  "<i>{{category}}</i>"</p>-->
+
+<!--{% endif %}-->
+
+
+<p align="left"><button> <a href="localhost/search"> Поиск </a> </button></p>
+
+<p align="right"><button> <a href="http://127.0.0.1:8000/add"> Добавить заметку на портал </a> </button></p>

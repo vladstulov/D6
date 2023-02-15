@@ -1,0 +1,109 @@
+{% extends "main.html" %}
+
+{% load custom_filters %} <!-- не забываем заранее загружать наши фильтры! -->
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+
+<body style="background-color: #addfad">
+<h2>Вход выполнен: {{request.user.username}}</h2>
+<button> <a href="sign/logout/">Выйти</a> </button>
+
+
+    <h1><p align="center" >Поиск по новостям портала</p></h1>
+    <p align="right"><button> <a href="/"> Вернуться на главную страницу </a></button> </p>
+
+    <hr>
+    {% if news %} <!-- Если есть заметки, то выводим таблицу с ними -->
+       Заметок на портале: {{ news|length }} <br> <br> <br>
+
+
+    {% else %}
+        <h2>Заметок на портале нет!</h2>
+    {% endif %}
+
+
+
+
+<!-- Перед таблицей добавим форму для поиска -->
+<form method="GET">
+
+    {{ filter.form }} <!-- Форму от фильтров за нас сделает django. А вот кнопку, увы придётся делать самому -->
+<p align="right" ><input type="submit" value="ПОИСК" style="height:60px; width:250px" /></p>
+</form>
+
+        <table>
+            <tr>
+                <td>
+                    <b>Название</b>
+                </td>
+                <td>
+                    <b>Дата публикации</b>
+                </td>
+                <td >
+                   <b>Описание</b>
+                </td>
+                <td  >
+                    <b>Автор</b>
+                </td>
+
+                <td  >
+                    <b>Категория</b>
+                </td>
+
+            </tr>
+        {% for note in  filter.qs %}
+            <tr>
+                <td>
+                    <!-- {{ note.title|censor }} -->
+                    <a href="{% url 'note' note.id %}">{{ note.title|censor }}</a>
+                </td>
+                <td>
+                    {{ note.dateCreation|date:'d M Y' }}
+                </td>
+
+                <td width="40%">
+                    {{ note.text|truncatechars:77|censor }} <!-- дописываем специальный фильтр, чтобы ограничить количество символов до 20. Все остальные символы превратятся в многоточие. -->
+                </td>
+                <td>
+                    {{ note.author }}
+                </td>
+
+                <td>
+                    {{ note.category }}
+                </td>
+
+            </tr>
+        {% endfor %}
+        </table>
+{% if is_paginated %}
+
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">>>></a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+{% endif %}
+
+
+{% endblock content %}
+

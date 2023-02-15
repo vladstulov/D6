@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h2>Вход выполнен: {{request.user.username}}</h2>
+<button> <a href="sign/logout/">Выйти</a> </button>
+
+
+<body style="background-color: #00FF00">
+
+<h1> <p align="center" > {{message}}  <i>{{category}}</i> </p> </h1>
+
+
+<p align="right"><button><a href="{% url 'category_list' category.id %}"> Перейти в новости категории </a></button> </p>
+<p align="right"><button> <a href="/"> Вернуться на главную страницу </a></button> </p>
+
+<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+<p align="center"> <a href="{% url 'unsubscribe' category.id %}"> Отписаться от рассылки в категории </a> </p>
+{% endblock content %}
+
+</body>

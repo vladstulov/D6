@@ -1,0 +1,78 @@
+{% extends "main.html" %}
+
+{% load custom_filters %} <!-- не забываем заранее загружать наши фильтры! -->
+
+{% block title %}
+Новость
+{% endblock title %}
+
+{% block content %}
+
+<body style="background-color: #FFCCCC">
+<h2>Вход выполнен: {{request.user.username}}</h2>
+<button> <a href="sign/logout/">Выйти</a> </button>
+
+
+    <h1><p align="center" >Новости на портале</p></h1>
+    <p align="right"><button> <a href="/"> Вернуться на главную страницу </a></button> </p>
+    <hr>
+        <table>
+            <tr>
+                <td>
+                    <strong>Название</strong>
+                </td>
+                <td>
+                    <strong>Дата публикации</strong>
+                </td>
+                <td>
+                    <strong><p align="center" >Содержание статьи</p></strong>
+                </td>
+                <td>
+                    <strong>Автор</strong>
+                </td>
+
+                  <td>
+                    <strong>Категория</strong>
+                </td>
+
+            </tr>
+            <tr>
+                <td width=200px>
+                    <br> <br>
+                    {{ note.title|censor }}
+                </td>
+                <td width=200px>
+                    <br><br>
+                    {{ note.dateCreation|date:'d-M-Y h:m' }}
+                </td>
+
+                <td width=2000px>
+                    <br><br>
+                    <i>{{ note.text|censor }}</i>
+                </td>
+
+                  <td width="8%">
+                    <br> <br>
+                     {{ note.author }}
+                    </td>
+
+
+                 <td >
+                    <br> <br>
+
+                     <a href="{% url 'category_list' note.category.id %}">{{ note.category }}</a>
+
+
+                </td>
+
+            </tr>
+        </table>
+<br><br><br><br><br><br>
+    <button><a  href="{% url 'newsEdit' note.id %}">Редактировать </a> </button><br><br>
+    <button><a href="{% url 'newsDelete' note.id %}"> Удалить </a> </button>
+
+{% endblock content %}
+
+<!--<a href="{% url 'category_list' category.id %}">{{ note.category }}</a>-->
+
+<!--{{ note.category }}-->
